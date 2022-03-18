@@ -2,21 +2,38 @@ import PubNub from "pubnub";
 import pubnubConfig from "./pubnub.config.json";
 import { v4 as uuid } from "uuid";
 
-const pubnub = new PubNub({ ...pubnubConfig, uuid: uuid() });
-
 export const MESSAGE_CHANNEL = "MESSAGE_CHANNEL";
 
-pubnub.subscribe({ channels: [MESSAGE_CHANNEL] });
+function PubSub() {
+  const pubnub = new PubNub({ ...pubnubConfig, uuid: uuid() });
 
-pubnub.addListener({
-  message: (messageObject) => {
-    console.log("messageObject", messageObject);
-  },
-});
+  pubnub.subscribe({ channels: [MESSAGE_CHANNEL] });
 
-setTimeout(() => {
-  pubnub.publish({
-    message: "foo",
-    channel: MESSAGE_CHANNEL,
-  });
-}, 1000);
+  this.addListener = (listenerConfig) => {
+    pubnub.addListener(listenerConfig);
+  };
+
+  this.publish = (message) => {
+    console.log("publish message", message);
+
+    pubnub.publish({
+      message,
+      channel: MESSAGE_CHANNEL,
+    });
+  };
+}
+
+export default PubSub;
+
+// pubnub.addListener({
+//   message: (messageObject) => {
+//     console.log("messageObject", messageObject);
+//   },
+// });
+
+// setTimeout(() => {
+//   pubnub.publish({
+//     message: "foo",
+//     channel: MESSAGE_CHANNEL,
+//   });
+// }, 1000);
